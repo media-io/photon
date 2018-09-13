@@ -4,6 +4,7 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3URI;
+import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.*;
 
 import java.io.FilenameFilter;
@@ -25,18 +26,29 @@ public class S3FileLocator implements FileLocator {
         this.s3URI = new AmazonS3URI(url, true);
         this.bucket = this.s3URI.getBucket();
         this.key = this.s3URI.getKey();
+        this.setAWSEndpoint();
     }
 
     public S3FileLocator(URI url) {
         this.s3URI = new AmazonS3URI(url);
         this.bucket = this.s3URI.getBucket();
         this.key = this.s3URI.getKey();
+        this.setAWSEndpoint();
     }
 
     public S3FileLocator(String bucket, String key) {
         this.bucket = bucket;
         this.key = key;
         this.s3URI = new AmazonS3URI("s3://" + this.bucket + "/" + this.key, true);
+        this.setAWSEndpoint();
+    }
+
+    private void setAWSEndpoint() {
+        String awsEndpoint =  System.getenv("AWS_S3_ENDPOINT");
+        if (awsEndpoint != null && awsEndpoint.length() > 0) {
+            s3Client.setEndpoint(awsEndpoint);
+            s3Client.setS3ClientOptions(S3ClientOptions.builder().setPathStyleAccess(true).build());
+        }
     }
 
     public static void main(String args[]) throws IOException {
