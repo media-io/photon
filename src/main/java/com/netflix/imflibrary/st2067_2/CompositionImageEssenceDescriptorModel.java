@@ -40,6 +40,7 @@ public final class CompositionImageEssenceDescriptorModel {
     private final Integer storedHeight;
     private final Fraction sampleRate;
     private final Integer pixelBitDepth;
+    private final Integer componentDepth;
     private final Colorimetry.Quantization quantization;
     private final Colorimetry color;
     private final Colorimetry.Sampling sampling;
@@ -152,7 +153,10 @@ public final class CompositionImageEssenceDescriptorModel {
         this.paletteLayout = getFieldAsString(paletteLayoutUL);
         // end Items constrained in ST2065-5
 
+        this.componentDepth = parseComponentDepth();
+
         UL MXFGCFrameWrappedACESPictures = UL.fromULAsURNStringToUL("urn:smpte:ul:060e2b34.0401010d.0d010301.02190100"); // MXF-GC Frame-wrapped ACES Pictures per 2065-5
+
         if(!this.colorModel.equals(ColorModel.Unknown)) {
             if ((this.essenceContainerFormatUL != null) && getEssenceContainerFormatUL().equals(MXFGCFrameWrappedACESPictures) ) { // App #5
                 if(colorModel.equals(ColorModel.RGB)) {
@@ -215,6 +219,10 @@ public final class CompositionImageEssenceDescriptorModel {
 
     public @Nonnull Integer getPixelBitDepth() {
         return pixelBitDepth;
+    }
+
+    public @Nonnull Integer getComponentDepth() {
+        return componentDepth;
     }
 
     public @Nonnull Integer getStoredHeight() {
@@ -373,14 +381,22 @@ public final class CompositionImageEssenceDescriptorModel {
 	    return paletteLayout;
 	}
 
+    private @Nonnull Integer parseComponentDepth() {
+        Integer depth = getFieldAsInteger(componentDepthUL);
+        return depth != null ? depth : 0;
+    }
+
     private @Nonnull Integer parsePixelBitDepth(@Nonnull ColorModel colorModel) {
         Integer refPixelBitDepth = null;
         DOMNodeObjectModel subDescriptors = imageEssencedescriptorDOMNode.getDOMNode(regXMLLibDictionary.getSymbolNameFromURN(subdescriptorsUL));
         if (subDescriptors == null) {
-            imfErrorLogger.addError(IMFErrorLogger.IMFErrors.ErrorCodes.APPLICATION_COMPOSITION_ERROR,
-                    IMFErrorLogger.IMFErrors.ErrorLevels.NON_FATAL,
-                    String.format("EssenceDescriptor with ID %s is missing SubDescriptors", imageEssencedescriptorID.toString()));
-
+            Integer componentDepth = parseComponentDepth();
+            if (componentDepth == 0) {
+                imfErrorLogger.addError(IMFErrorLogger.IMFErrors.ErrorCodes.APPLICATION_COMPOSITION_ERROR,
+                        IMFErrorLogger.IMFErrors.ErrorLevels.NON_FATAL,
+                        String.format("EssenceDescriptor with ID %s is missing SubDescriptors and missing Component Depth", imageEssencedescriptorID.toString()));
+            }
+            refPixelBitDepth = componentDepth;
         } else {
             DOMNodeObjectModel jpeg2000SubdescriptorDOMNode = subDescriptors.getDOMNode(regXMLLibDictionary.getSymbolNameFromURN(jpeg2000SubDescriptorUL));
 
