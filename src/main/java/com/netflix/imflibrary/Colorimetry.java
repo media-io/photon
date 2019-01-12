@@ -87,11 +87,8 @@ public enum Colorimetry {
         IEC6196624xvYCC(UL.fromULAsURNStringToUL("urn:smpte:ul:06.0E.2B.34.04.01.01.0D.04.01.01.01.01.08.00.00")),
         ITU2020(UL.fromULAsURNStringToUL("urn:smpte:ul:06.0E.2B.34.04.01.01.0E.04.01.01.01.01.09.00.00")),
         SMPTEST2084(UL.fromULAsURNStringToUL("urn:smpte:ul:06.0E.2B.34.04.01.01.0D.04.01.01.01.01.0A.00.00")),
-<<<<<<< HEAD
         Linear(UL.fromULAsURNStringToUL("urn:smpte:ul:06.0e.2b.34.04.01.01.06.04.01.01.01.01.06.00.00")),
-=======
         ITU2020HLG(UL.fromULAsURNStringToUL("urn:smpte:ul:06.0E.2B.34.04.01.01.0D.04.01.01.01.01.0B.00.00")),
->>>>>>> master
         Unknown(null);
 
         private final UL transferCharacteristicUL;
