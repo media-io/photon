@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class IMPAnalyzer {
 
     private static final String CONFORMANCE_LOGGER_PREFIX = "Virtual Track Conformance";
     private static final Logger logger = LoggerFactory.getLogger(IMPAnalyzer.class);
-    private static ApplicationSet expectedAppType;
+    private static ApplicationSet expectedAppType = new ApplicationSet();
 
     private static Map<UUID, PayloadRecord> getTrackFileIdToHeaderPartitionPayLoadMap(List<PayloadRecord>
                                                                                 headerPartitionPayloadRecords) throws
@@ -416,7 +417,9 @@ public class IMPAnalyzer {
 
         List<ApplicationComposition> applicationCompositionList = new ArrayList<>();
         //If called as static method: Assume testing versus App#2/2E specification
-        if (expectedAppType == null) expectedAppType = ApplicationSet.APPLICATION_2_SET;
+        if (expectedAppType.getApplicationSet().isEmpty()) {
+            expectedAppType.appplicationSet = IMPAnalyzer.application2AllSet;
+        }
 
         for (PackingList.Asset asset : packingList.getAssets()) {
             if (asset.getType().equals(PackingList.Asset.TEXT_XML_TYPE)) {
@@ -587,6 +590,9 @@ public class IMPAnalyzer {
 
     private static final Set<ApplicationCompositionType> application2Set = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
         add(com.netflix.imflibrary.st2067_2.ApplicationCompositionFactory.ApplicationCompositionType.APPLICATION_2_COMPOSITION_TYPE);
+    }});
+
+    private static final Set<ApplicationCompositionType> application2eSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
         add(com.netflix.imflibrary.st2067_2.ApplicationCompositionFactory.ApplicationCompositionType.APPLICATION_2E_COMPOSITION_TYPE);
     }});
 
@@ -594,22 +600,35 @@ public class IMPAnalyzer {
         add(com.netflix.imflibrary.st2067_2.ApplicationCompositionFactory.ApplicationCompositionType.APPLICATION_5_COMPOSITION_TYPE);
     }});
 
-    private static final Set<ApplicationCompositionType> applicationAllSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
-        addAll(application2Set);
-        addAll(application5Set);
+    private static final Set<ApplicationCompositionType> applicationDppSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
+        add(com.netflix.imflibrary.st2067_2.ApplicationCompositionFactory.ApplicationCompositionType.APPLICATION_TSP_2121_COMPOSITION_TYPE);
     }});
 
-    public enum ApplicationSet {
-        APPLICATION_2_SET(application2Set),
-        APPLICATION_5_SET(application5Set),
-        APPLICATION_ALL_SET(applicationAllSet);
+    private static final Set<ApplicationCompositionType> application2AllSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
+        addAll(application2Set);
+        addAll(application2eSet);
+    }});
 
-        private Set<ApplicationCompositionType> appplicationSet;
+    private static final Set<ApplicationCompositionType> applicationAllSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
+        addAll(application2Set);
+        addAll(application2eSet);
+        addAll(application5Set);
+        addAll(applicationDppSet);
+    }});
 
+    public static class ApplicationSet {
+        public Set<ApplicationCompositionType> appplicationSet;
+
+        ApplicationSet() {
+            this.appplicationSet = new HashSet<ApplicationCompositionType>();
+        }
         ApplicationSet(Set<ApplicationCompositionType> applicationSet) {
             this.appplicationSet = applicationSet;
         }
 
+        public void setApplicationSet(Set<ApplicationCompositionType> applicationSet) {
+            this.appplicationSet = applicationSet;
+        }
         public Set<ApplicationCompositionType> getApplicationSet() {
             return appplicationSet;
         }
@@ -630,7 +649,7 @@ public class IMPAnalyzer {
         }
 
         if(inputFileLocator.isDirectory()) {
-            expectedAppType = ApplicationSet.APPLICATION_2_SET;
+            expectedAppType.setApplicationSet(IMPAnalyzer.application2eSet);
             for (int argIdx = 1; argIdx < args.length; ++argIdx) {
                 String curArg = args[argIdx];
                 String nextArg = argIdx < args.length - 1 ? args[argIdx + 1] : "";
@@ -640,9 +659,9 @@ public class IMPAnalyzer {
                         System.exit(-1);
                     }
                     if (nextArg.equalsIgnoreCase("app5")) {
-                        expectedAppType = ApplicationSet.APPLICATION_5_SET;
+                        expectedAppType.setApplicationSet(IMPAnalyzer.application5Set);
                     } else if (nextArg.equalsIgnoreCase("all")) {
-                        expectedAppType = ApplicationSet.APPLICATION_ALL_SET;
+                        expectedAppType.setApplicationSet(IMPAnalyzer.applicationAllSet);
                     } else if (!nextArg.equalsIgnoreCase("app2or2E")) {
                         logger.error(usage());
                         System.exit(-1);
