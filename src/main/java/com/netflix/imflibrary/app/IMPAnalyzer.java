@@ -246,9 +246,10 @@ public class IMPAnalyzer {
 
                 AssetMap assetMap = new AssetMap(FileLocator.fromLocation(mapProfileV2MappedFileSet.getAbsoluteAssetMapURI()));
                 assetMapErrorLogger.addAllErrors(assetMap.getErrors());
-
+                System.out.println(assetMap.getPackingListAssets());
                 for (AssetMap.Asset packingListAsset : assetMap.getPackingListAssets()) {
                     IMFErrorLogger packingListErrorLogger = new IMFErrorLoggerImpl();
+                    System.out.println(packingListAsset);
                     try {
                         PackingList packingList = new PackingList(FileLocator.fromLocation(rootFileLocator, packingListAsset.getPath().toString()));
                         packingListErrorLogger.addAllErrors(packingList.getErrors());
@@ -706,5 +707,6 @@ public class IMPAnalyzer {
             List<ErrorLogger.ErrorObject>errors = analyzeFile(inputFileLocator);
             logErrors(inputFileLocator.getName(), errors);
         }
+        System.out.println("END");
     }
 }

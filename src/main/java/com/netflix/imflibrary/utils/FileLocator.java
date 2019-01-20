@@ -37,6 +37,10 @@ public interface FileLocator
             return new S3FileLocator(location);
         }
 
+        if (location.startsWith("ws://") || location.startsWith("wss://")) {
+            return new WsFileLocator(location);
+        }
+
         return new LocalFileLocator(location);
     }
 
@@ -52,6 +56,10 @@ public interface FileLocator
     public static FileLocator fromLocation(URI location) {
         if (location.toString().startsWith("s3://")) {
             return new S3FileLocator(location);
+        }
+
+        if (location.toString().startsWith("ws://") || location.toString().startsWith("wss://")) {
+            return new WsFileLocator(location);
         }
 
         return new LocalFileLocator(location);
