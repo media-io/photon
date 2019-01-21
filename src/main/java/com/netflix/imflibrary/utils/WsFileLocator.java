@@ -68,6 +68,7 @@ public class WsFileLocator implements FileLocator {
                 String.format("userToken=%s&window_id=%s", token, this.window_id),
                 null)
                 .toString();
+            System.out.println(connect_url);
         } catch (IOException e) {
             System.out.println(e);
         } catch(URISyntaxException e) {
@@ -89,6 +90,7 @@ public class WsFileLocator implements FileLocator {
                 String.format("userToken=%s&window_id=%s", token, this.window_id),
                 null)
                 .toString();
+            System.out.println(connect_url);
         } catch (IOException e) {
             System.out.println(e);
         } catch(URISyntaxException e) {
