@@ -2,6 +2,7 @@ package com.netflix.imflibrary.utils;
 
 import org.phoenixframework.channels.*;
 
+import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WsFileLocator implements FileLocator {
     private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    // public Socket socket;
-    // public Channel channel_ui_agent;
     public String connect_url;
     public String token;
     private String window_id;
@@ -76,12 +75,13 @@ public class WsFileLocator implements FileLocator {
         }
     }
 
-    public WsFileLocator(URI url) {
+    public WsFileLocator(URI uri) {
         this.uri = uri;
         this.query = queryMap(this.uri.getQuery());
 
         try {
-            String token = getAuthToken();
+            this.token = getAuthToken();
+            this.window_id = randomIndentifier();
             this.connect_url = new URI(
                 this.uri.getScheme(),
                 this.uri.getAuthority(),
@@ -167,12 +167,14 @@ public class WsFileLocator implements FileLocator {
             }
             this.envelope = callback.getEnvelope();
             channel_ui_agent.leave();
+            channel_ui_agent.close();
             socket.removeAllChannels();
             socket.disconnect();
-            
+
             while (socket.isConnected()) {
                 Thread.sleep(10);
             }
+            socket.close();
         } catch (IOException e) {
             System.out.println(e);
         } catch (IllegalStateException e) {
@@ -201,8 +203,6 @@ public class WsFileLocator implements FileLocator {
 
     public InputStream getInputStream() throws IOException {
         System.out.println("get input stream");
-    //     S3Object s3Object = s3Client.getObject(this.bucket, this.key);
-    //     return s3Object.getObjectContent();
         return null;
     }
 
@@ -211,6 +211,11 @@ public class WsFileLocator implements FileLocator {
     }
 
     public String getName() {
+        File file = new File(query.get("path"));
+        return file.getName();
+    }
+
+    public String getAgentPath() {
         return query.get("path");
     }
 
@@ -279,20 +284,22 @@ public class WsFileLocator implements FileLocator {
                      .collect(Collectors.joining("&"));
 
                 URI file_uri = new URI(this.uri.getScheme(), this.uri.getAuthority(), this.uri.getPath(), new_query, null);
-
                 WsFileLocator fl = new WsFileLocator(file_uri.toString());
+
                 if (filenameFilter == null || filenameFilter.accept(null, fl.getName())) {
                     fileLocators.add(fl);
                 }
             }
 
             channel_ui_agent.leave();
+            channel_ui_agent.close();
             socket.removeAllChannels();
             socket.disconnect();
 
             while (socket.isConnected()) {
                 Thread.sleep(10);
             }
+            socket.close();
             return fileLocators.toArray(new WsFileLocator[0]);
         } catch (IOException e) {
             System.out.println(e);

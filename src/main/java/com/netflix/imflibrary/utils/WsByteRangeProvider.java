@@ -56,13 +56,6 @@ public class WsByteRangeProvider implements ResourceByteRangeProvider {
     {
         System.out.println("get byte range");
         System.out.println(rangeStart + " -> " + rangeEnd);
-        // try (InputStream input = this.getByteRangeAsStream(rangeStart, rangeEnd)) {
-        //     File rangeFile = new File(workingDirectory, "range");
-        //     try (FileOutputStream fos = new FileOutputStream(rangeFile)) {
-        //         IOUtils.copy(input, fos);
-        //     }
-        //     return rangeFile;
-        // }
         return null;
     }
 
@@ -89,7 +82,7 @@ public class WsByteRangeProvider implements ResourceByteRangeProvider {
         socket.onMessage(callback);
 
         String agent = this.wsFileLocator.getAgent();
-        String name = this.wsFileLocator.getName();
+        String name = this.wsFileLocator.getAgentPath();
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = String.format(
@@ -97,7 +90,7 @@ public class WsByteRangeProvider implements ResourceByteRangeProvider {
             agent,
             name,
             rangeStart,
-            rangeEnd - rangeStart
+            rangeEnd - rangeStart + 1
         );
 
         JsonNode payload = mapper.readTree(jsonString);
@@ -111,32 +104,23 @@ public class WsByteRangeProvider implements ResourceByteRangeProvider {
             }
             Envelope envelope = callback.getEnvelope();
             channel_ui_agent.leave();
+            channel_ui_agent.close();
             socket.removeAllChannels();
             socket.disconnect();
 
             while (socket.isConnected()) {
                 Thread.sleep(10);
             }
-            System.out.println(socket.isConnected());
+
+            socket.close();
             return Base64.getDecoder().decode(envelope.getPayload().get("data").asText());
         } catch (InterruptedException e) {
             System.out.println(e);
         }
-        return null;
+        return new byte[0];
     }
 
     public InputStream getByteRangeAsStream(long rangeStart, long rangeEnd) throws IOException {
-        System.out.println("get byte range as stream");
-        System.out.println(rangeStart + " -> " + rangeEnd);
-        //validation of range request guarantees that 0 <= rangeStart <= rangeEnd <= (resourceSize - 1)
-        // ResourceByteRangeProvider.Utilities.validateRangeRequest(this.fileSize, rangeStart, rangeEnd);
-
-        // GetObjectRequest request = new GetObjectRequest(this.s3Uri.getBucket(), this.s3Uri.getKey());
-        // request.setRange(rangeStart, rangeEnd);
-
-        // S3Object obj = s3Client.getObject(request);
-
-        // return obj.getObjectContent();
-        return null;
+        return new ByteArrayInputStream(getByteRangeAsBytes(rangeStart, rangeEnd));
     }
 }
