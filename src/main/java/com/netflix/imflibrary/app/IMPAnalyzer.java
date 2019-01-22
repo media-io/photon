@@ -418,7 +418,7 @@ public class IMPAnalyzer {
         List<ApplicationComposition> applicationCompositionList = new ArrayList<>();
         //If called as static method: Assume testing versus App#2/2E specification
         if (expectedAppType.getApplicationSet().isEmpty()) {
-            expectedAppType.appplicationSet = IMPAnalyzer.application2AllSet;
+            expectedAppType.appplicationSet = IMPAnalyzer.applicationDefaultSet;
         }
 
         for (PackingList.Asset asset : packingList.getAssets()) {
@@ -607,6 +607,12 @@ public class IMPAnalyzer {
     private static final Set<ApplicationCompositionType> application2AllSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
         addAll(application2Set);
         addAll(application2eSet);
+    }});
+
+    private static final Set<ApplicationCompositionType> applicationDefaultSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
+        addAll(application2Set);
+        addAll(application2eSet);
+        addAll(applicationDppSet);
     }});
 
     private static final Set<ApplicationCompositionType> applicationAllSet = Collections.unmodifiableSet(new HashSet<ApplicationCompositionType>() {{
