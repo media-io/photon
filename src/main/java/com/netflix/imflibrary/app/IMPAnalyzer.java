@@ -655,7 +655,7 @@ public class IMPAnalyzer {
         }
 
         if(inputFileLocator.isDirectory()) {
-            expectedAppType.setApplicationSet(IMPAnalyzer.application2eSet);
+            expectedAppType.setApplicationSet(IMPAnalyzer.applicationDefaultSet);
             for (int argIdx = 1; argIdx < args.length; ++argIdx) {
                 String curArg = args[argIdx];
                 String nextArg = argIdx < args.length - 1 ? args[argIdx + 1] : "";
