@@ -119,7 +119,7 @@ public interface FileLocator
 
     /**
      * Converts this abstract pathname into a pathname string.  The resulting
-     * string uses the {@link #separator default name-separator character} to
+     * string uses the {@link #File.separator default name-separator character} to
      * separate the names in the name sequence.
      */
     public String getPath() throws IOException;
