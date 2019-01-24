@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script will build the project.
 
-git clone git@github.com:media-io/JavaPhoenixChannels.git
+git clone https://github.com/media-io/JavaPhoenixChannels.git
 cd JavaPhoenixChannels
 ./gradlew build
  mvn install:install-file \
