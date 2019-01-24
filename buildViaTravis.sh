@@ -1,6 +1,17 @@
 #!/bin/bash
 # This script will build the project.
 
+git clone git@github.com:media-io/JavaPhoenixChannels.git
+cd JavaPhoenixChannels
+./gradlew build
+ mvn install:install-file \
+  -Dfile=build/libs/JavaPhoenixChannels-1.0.0.jar \
+  -DgroupId=com.github.eoinsha \
+  -DartifactId=JavaPhoenixChannels \
+  -Dversion=1.0.0 \
+  -Dpackaging=jar
+cd ..
+
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
   ./gradlew build
