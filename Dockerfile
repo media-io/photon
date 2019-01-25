@@ -9,12 +9,7 @@ RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/media-io/JavaPhoenixChannels.git && \
     cd JavaPhoenixChannels && \
     ./gradlew build \
-     mvn install:install-file \
-      -Dfile=build/libs/JavaPhoenixChannels-1.0.0.jar \
-      -DgroupId=com.github.eoinsha \
-      -DartifactId=JavaPhoenixChannels \
-      -Dversion=1.0.0 \
-      -Dpackaging=jar  && \
+    ./gradlew publishToMavenLocal && \
     cd ..  && \
     ./gradlew build && \
     ./gradlew getDependencies
