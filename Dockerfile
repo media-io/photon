@@ -4,6 +4,8 @@ ADD . /source
 
 WORKDIR /source
 
+RUN apt-get update && apt-get install -y git
+
 RUN git clone https://github.com/media-io/JavaPhoenixChannels.git && \
     cd JavaPhoenixChannels && \
     ./gradlew build \
