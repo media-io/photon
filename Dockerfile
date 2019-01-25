@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y git
 
 RUN git clone https://github.com/media-io/JavaPhoenixChannels.git && \
     cd JavaPhoenixChannels && \
-    ./gradlew build \
+    ./gradlew build && \
     ./gradlew publishToMavenLocal && \
     cd ..  && \
     ./gradlew build && \
