@@ -9,9 +9,9 @@ RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/media-io/JavaPhoenixChannels.git && \
     cd JavaPhoenixChannels && \
     ./gradlew build && \
-    ./gradlew publishToMavenLocal && \
-    cd ..  && \
-    ./gradlew build && \
+    ./gradlew publishToMavenLocal
+
+RUN ./gradlew build && \
     ./gradlew getDependencies
 
 ENV IMP_PATH=/media
